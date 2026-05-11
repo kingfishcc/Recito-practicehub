@@ -51,7 +51,8 @@
           { title: '愛蓮說', url: 'https://kingfishcc.github.io/On-the-Love-of-the-Lotus-Rearrange/' },
           { title: '一棵開花的樹', url: 'https://kingfishcc.github.io/A-Blooming-Tree-Rearrange/' },
           { title: '張釋之執法', url: 'https://kingfishcc.github.io/Zhang-Shizhi-Upholds-the-Law-Rearrange/' },
-          { title: '我所知道的康橋', url: 'https://kingfishcc.github.io/The-Cambridge-I-Know-Rearrange/' }
+          { title: '我所知道的康橋', url: 'https://kingfishcc.github.io/The-Cambridge-I-Know-Rearrange/' },
+          { title: '偶然', url: 'https://kingfishcc.github.io/By-Chance-Rearrange/' }
         ],
         g9: [
           { title: '與宋元思書', url: 'https://kingfishcc.github.io/Letter-to-Song-Yuansi-Rearrange/' },
@@ -262,7 +263,13 @@
           contentList = data.chinese[grade];
         }
 
-        const gradeNumber = grade.replace('g', '');
+        const fullWidthGradeMap = {
+          'g7': '７',
+          'g8': '８',
+          'g9': '９'
+        };
+        const gradeNumber = fullWidthGradeMap[grade] || grade.replace('g', '');
+        
         const titleText = isEnglish 
           ? `${gradeNumber}${semester === 1 ? '上' : '下'}英語` 
           : `${gradeNumber}年級國文`;
