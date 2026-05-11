@@ -50,12 +50,12 @@
         g8: [
           { title: '愛蓮說', url: 'https://kingfishcc.github.io/On-the-Love-of-the-Lotus-Rearrange/' },
           { title: '一棵開花的樹', url: 'https://kingfishcc.github.io/A-Blooming-Tree-Rearrange/' },
-          { title: '張釋之執法', url: 'https://kingfishcc.github.io/Zhang-Shizhi-Upholds-the-Law/' },
-          { title: '我所知道的康橋', url: 'https://kingfishcc.github.io/The-Cambridge-I-Know/' }
+          { title: '張釋之執法', url: 'https://kingfishcc.github.io/Zhang-Shizhi-Upholds-the-Law-Rearrange/' },
+          { title: '我所知道的康橋', url: 'https://kingfishcc.github.io/The-Cambridge-I-Know-Rearrange/' }
         ],
         g9: [
           { title: '與宋元思書', url: 'https://kingfishcc.github.io/Letter-to-Song-Yuansi-Rearrange/' },
-          { title: '車過枋寮', url: 'https://kingfishcc.github.io/Fangliao-on-a-Bus/' }
+          { title: '車過枋寮', url: 'https://kingfishcc.github.io/Fangliao-on-a-Bus-Rearrange/' }
         ]
       },
       english: {
@@ -148,9 +148,9 @@
 
       const Navbar = () => (
         <nav className="bg-[#f2e8e9] text-gray-700 shadow-sm sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="w-full px-6 md:px-10">
             <div className="flex items-center justify-between h-16">
-              <div className="flex items-center cursor-pointer" onClick={() => handleNavigate('home')}>
+              <div className="flex items-center cursor-pointer flex-shrink-0" onClick={() => handleNavigate('home')}>
                 <span className="font-bold text-2xl tracking-wider text-[#d49a9e]">PRACTICE<span className="text-gray-500">HUB</span></span>
               </div>
               <div className="flex-1 max-w-md mx-8 hidden md:block">
@@ -166,27 +166,25 @@
                   />
                 </div>
               </div>
-              <div className="hidden md:block">
-                <div className="ml-4 flex items-center space-x-6">
-                  <button onClick={() => handleNavigate('home')} className="hover:text-[#d49a9e] font-medium transition-colors h-16 flex items-center">Home</button>
-                  <div className="relative group cursor-pointer font-medium h-16 flex items-center">
-                    <span className="hover:text-[#d49a9e] transition-colors">國文 ▾</span>
-                    <div className="absolute left-1/2 -translate-x-1/2 top-12 pt-4 w-24 hidden group-hover:block z-50">
-                      <div className="bg-white shadow-lg rounded-md overflow-hidden border border-gray-100 text-center text-sm">
-                        <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('chinese-g7')}>國一 G7</div>
-                        <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('chinese-g8')}>國二 G8</div>
-                        <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('chinese-g9')}>國三 G9</div>
-                      </div>
+              <div className="hidden md:flex items-center space-x-6 flex-shrink-0">
+                <button onClick={() => handleNavigate('home')} className="hover:text-[#d49a9e] font-medium transition-colors h-16 flex items-center">Home</button>
+                <div className="relative group cursor-pointer font-medium h-16 flex items-center">
+                  <span className="hover:text-[#d49a9e] transition-colors">國文 ▾</span>
+                  <div className="absolute left-1/2 -translate-x-1/2 top-12 pt-4 w-24 hidden group-hover:block z-50">
+                    <div className="bg-white shadow-lg rounded-md overflow-hidden border border-gray-100 text-center text-sm">
+                      <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('chinese-g7')}>國一 G7</div>
+                      <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('chinese-g8')}>國二 G8</div>
+                      <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('chinese-g9')}>國三 G9</div>
                     </div>
                   </div>
-                  <div className="relative group cursor-pointer font-medium h-16 flex items-center">
-                    <span className="hover:text-[#d49a9e] transition-colors">英語 ▾</span>
-                    <div className="absolute left-1/2 -translate-x-1/2 top-12 pt-4 w-24 hidden group-hover:block z-50">
-                      <div className="bg-white shadow-lg rounded-md overflow-hidden border border-gray-100 text-center text-sm">
-                        <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('english-g7')}>國一 G7</div>
-                        <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('english-g8')}>國二 G8</div>
-                        <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('english-g9')}>國三 G9</div>
-                      </div>
+                </div>
+                <div className="relative group cursor-pointer font-medium h-16 flex items-center">
+                  <span className="hover:text-[#d49a9e] transition-colors">英語 ▾</span>
+                  <div className="absolute left-1/2 -translate-x-1/2 top-12 pt-4 w-24 hidden group-hover:block z-50">
+                    <div className="bg-white shadow-lg rounded-md overflow-hidden border border-gray-100 text-center text-sm">
+                      <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('english-g7')}>國一 G7</div>
+                      <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('english-g8')}>國二 G8</div>
+                      <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('english-g9')}>國三 G9</div>
                     </div>
                   </div>
                 </div>
