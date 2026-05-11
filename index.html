@@ -1,329 +1,351 @@
-import React, { useState } from 'react';
-import { Search, Home, BookOpen, Globe, RefreshCw, AlertCircle, ChevronRight, Feather } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recito 抽背練習平臺</title>
+  
+  <!-- 載入字體 -->
+  <link href="https://cdn.jsdelivr.net/npm/gensen-rounded-web@1.0.1/css/gensen-rounded-tw.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- 載入 Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- 載入 React 與 Babel (讓瀏覽器能直接讀懂 React) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-// --- 資料定義 ---
-const data = {
-  chinese: {
-    g7: [
-      { title: '兒時記趣', url: 'https://kingfishcc.github.io/Childhood-Story-Rearrange/' },
-      { title: '傘', url: 'https://kingfishcc.github.io/The-Umbrella/' }
-    ],
-    g8: [
-      { title: '愛蓮說', url: 'https://kingfishcc.github.io/On-the-Love-of-the-Lotus-Rearrange/' },
-      { title: '一棵開花的樹', url: 'https://kingfishcc.github.io/A-Blooming-Tree-Rearrange/' },
-      { title: '張釋之執法', url: 'https://kingfishcc.github.io/Zhang-Shizhi-Upholds-the-Law/' },
-      { title: '我所知道的康橋', url: 'https://kingfishcc.github.io/The-Cambridge-I-Know/' }
-    ],
-    g9: [
-      { title: '與宋元思書', url: 'https://kingfishcc.github.io/Letter-to-Song-Yuansi-Rearrange/' },
-      { title: '車過枋寮', url: 'https://kingfishcc.github.io/Fangliao-on-a-Bus/' }
-    ]
-  },
-  english: {
-    g7: {
-      sem1: [],
-      sem2: [] // 目前尚未上傳
-    },
-    g8: {
-      sem1: [],
-      sem2: [
-        { title: 'Unit 1', url: 'https://gemini.google.com/share/290252f163da' },
-        { title: 'Unit 2', url: 'https://gemini.google.com/share/894b06f0f2ab' },
-        { title: 'Unit 3', url: 'https://gemini.google.com/share/cd3fd7d13db0' }
-      ]
-    },
-    g9: {
-      sem1: [],
-      sem2: [
-        { title: 'Unit 1', url: 'https://gemini.google.com/share/059f461e1510' },
-        { title: 'Unit 2', url: 'https://gemini.google.com/share/ec66c5413ae7' },
-        { title: 'Unit 3', url: 'https://gemini.google.com/share/194ee2e5fff8' }
-      ]
+  <style>
+    * {
+      font-family: 'Chiron GoRound TC', 'GenSenRounded TW', sans-serif !important;
     }
-  }
-};
+  </style>
+</head>
+<body class="bg-[#f9f9fa]">
+  <div id="root"></div>
 
-export default function App() {
-  const [currentPage, setCurrentPage] = useState('home'); // 'home', 'chinese-g7', 'english-g8', etc.
-  const [semester, setSemester] = useState(2); // 1 = 上學期, 2 = 下學期
+  <!-- React 程式碼區塊 -->
+  <script type="text/babel">
+    const { useState, useEffect } = React;
 
-  // 計算距離下個星期四還有幾天
-  const getDaysUntilThursday = () => {
-    const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 (Sun) to 6 (Sat)
-    return (4 - dayOfWeek + 7) % 7;
-  };
-  const daysUntilThursday = getDaysUntilThursday();
+    // --- 圖示元件 (替換原本需要額外安裝的 lucide-react) ---
+    const IconSearch = ({ size = 24, className = "" }) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
+    const IconHome = ({ size = 24, className = "" }) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>;
+    const IconBookOpen = ({ size = 24, className = "" }) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>;
+    const IconGlobe = ({ size = 24, className = "" }) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>;
+    const IconRefreshCw = ({ size = 24, className = "" }) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>;
+    const IconAlertCircle = ({ size = 24, className = "" }) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>;
+    const IconChevronRight = ({ size = 24, className = "" }) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>;
+    const IconFeather = ({ size = 24, className = "" }) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg>;
 
-  const handleNavigate = (page) => {
-    setCurrentPage(page);
-    window.scrollTo(0, 0);
-  };
-
-  const toggleSemester = () => {
-    setSemester(prev => (prev === 1 ? 2 : 1));
-  };
-
-  // --- 搜尋功能邏輯 ---
-  const handleSearch = (e) => {
-    if (e.key === 'Enter') {
-      const term = e.target.value.trim().toLowerCase();
-      if (!term) return;
-
-      let found = false;
-
-      // 搜尋國文
-      for (const [grade, lessons] of Object.entries(data.chinese)) {
-        if (lessons.some(l => l.title.toLowerCase().includes(term))) {
-          handleNavigate(`chinese-${grade}`);
-          found = true;
-          break;
+    // --- 資料定義 ---
+    const data = {
+      chinese: {
+        g7: [
+          { title: '兒時記趣', url: 'https://kingfishcc.github.io/Childhood-Story-Rearrange/' },
+          { title: '傘', url: 'https://kingfishcc.github.io/The-Umbrella/' }
+        ],
+        g8: [
+          { title: '愛蓮說', url: 'https://kingfishcc.github.io/On-the-Love-of-the-Lotus-Rearrange/' },
+          { title: '一棵開花的樹', url: 'https://kingfishcc.github.io/A-Blooming-Tree-Rearrange/' },
+          { title: '張釋之執法', url: 'https://kingfishcc.github.io/Zhang-Shizhi-Upholds-the-Law/' },
+          { title: '我所知道的康橋', url: 'https://kingfishcc.github.io/The-Cambridge-I-Know/' }
+        ],
+        g9: [
+          { title: '與宋元思書', url: 'https://kingfishcc.github.io/Letter-to-Song-Yuansi-Rearrange/' },
+          { title: '車過枋寮', url: 'https://kingfishcc.github.io/Fangliao-on-a-Bus/' }
+        ]
+      },
+      english: {
+        g7: {
+          sem1: [],
+          sem2: [] // 目前尚未上傳
+        },
+        g8: {
+          sem1: [],
+          sem2: [
+            { title: 'Unit 1', url: 'https://gemini.google.com/share/290252f163da' },
+            { title: 'Unit 2', url: 'https://gemini.google.com/share/894b06f0f2ab' },
+            { title: 'Unit 3', url: 'https://gemini.google.com/share/cd3fd7d13db0' }
+          ]
+        },
+        g9: {
+          sem1: [],
+          sem2: [
+            { title: 'Unit 1', url: 'https://gemini.google.com/share/059f461e1510' },
+            { title: 'Unit 2', url: 'https://gemini.google.com/share/ec66c5413ae7' },
+            { title: 'Unit 3', url: 'https://gemini.google.com/share/194ee2e5fff8' }
+          ]
         }
       }
+    };
 
-      // 搜尋英文 (如果國文沒找到)
-      if (!found) {
-        for (const [grade, semesters] of Object.entries(data.english)) {
-          if (semesters.sem1.some(l => l.title.toLowerCase().includes(term))) {
-            setSemester(1);
-            handleNavigate(`english-${grade}`);
-            found = true;
-            break;
+    function App() {
+      const [currentPage, setCurrentPage] = useState('home');
+      const [semester, setSemester] = useState(2);
+
+      useEffect(() => {
+        document.title = 'Recito 抽背練習平臺';
+      }, []);
+
+      const getDaysUntilThursday = () => {
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        return (4 - dayOfWeek + 7) % 7;
+      };
+      const daysUntilThursday = getDaysUntilThursday();
+
+      const handleNavigate = (page) => {
+        setCurrentPage(page);
+        window.scrollTo(0, 0);
+      };
+
+      const toggleSemester = () => {
+        setSemester(prev => (prev === 1 ? 2 : 1));
+      };
+
+      const handleSearch = (e) => {
+        if (e.key === 'Enter') {
+          const term = e.target.value.trim().toLowerCase();
+          if (!term) return;
+
+          let found = false;
+
+          for (const [grade, lessons] of Object.entries(data.chinese)) {
+            if (lessons.some(l => l.title.toLowerCase().includes(term))) {
+              handleNavigate(`chinese-${grade}`);
+              found = true;
+              break;
+            }
           }
-          if (semesters.sem2.some(l => l.title.toLowerCase().includes(term))) {
-            setSemester(2);
-            handleNavigate(`english-${grade}`);
-            found = true;
-            break;
+
+          if (!found) {
+            for (const [grade, semesters] of Object.entries(data.english)) {
+              if (semesters.sem1.some(l => l.title.toLowerCase().includes(term))) {
+                setSemester(1);
+                handleNavigate(`english-${grade}`);
+                found = true;
+                break;
+              }
+              if (semesters.sem2.some(l => l.title.toLowerCase().includes(term))) {
+                setSemester(2);
+                handleNavigate(`english-${grade}`);
+                found = true;
+                break;
+              }
+            }
+          }
+
+          if (found) {
+            e.target.value = '';
+          } else {
+            alert('找不到符合的課文名稱喔！請試試輸入其他關鍵字。');
           }
         }
-      }
+      };
 
-      if (found) {
-        e.target.value = ''; // 搜尋成功後清空輸入框
-      } else {
-        alert('找不到符合的課文名稱喔！請試試輸入其他關鍵字。');
-      }
-    }
-  };
-
-  // --- 導覽列元件 ---
-  const Navbar = () => (
-    <nav className="bg-[#f2e8e9] text-gray-700 shadow-sm sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center cursor-pointer" onClick={() => handleNavigate('home')}>
-            <span className="font-bold text-2xl tracking-wider text-[#d49a9e]">PRACTICE<span className="text-gray-500">HUB</span></span>
-          </div>
-          <div className="flex-1 max-w-md mx-8 hidden md:block">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-gray-400" />
+      const Navbar = () => (
+        <nav className="bg-[#f2e8e9] text-gray-700 shadow-sm sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex items-center cursor-pointer" onClick={() => handleNavigate('home')}>
+                <span className="font-bold text-2xl tracking-wider text-[#d49a9e]">PRACTICE<span className="text-gray-500">HUB</span></span>
               </div>
-              <input
-                type="text"
-                onKeyDown={handleSearch}
-                className="block w-full pl-10 pr-3 py-2 border border-transparent rounded-full leading-5 bg-white bg-opacity-70 text-gray-700 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#d49a9e] sm:text-sm transition-colors"
-                placeholder="搜尋課文名稱"
-              />
-            </div>
-          </div>
-          <div className="hidden md:block">
-            <div className="ml-4 flex items-center space-x-6">
-              <button onClick={() => handleNavigate('home')} className="hover:text-[#d49a9e] font-medium transition-colors h-16 flex items-center">Home</button>
-              <div className="relative group cursor-pointer font-medium h-16 flex items-center">
-                <span className="hover:text-[#d49a9e] transition-colors">國文 ▾</span>
-                <div className="absolute left-1/2 -translate-x-1/2 top-12 pt-4 w-24 hidden group-hover:block z-50">
-                  <div className="bg-white shadow-lg rounded-md overflow-hidden border border-gray-100 text-center text-sm">
-                    <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('chinese-g7')}>國一 G7</div>
-                    <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('chinese-g8')}>國二 G8</div>
-                    <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('chinese-g9')}>國三 G9</div>
+              <div className="flex-1 max-w-md mx-8 hidden md:block">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <IconSearch className="h-4 w-4 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    onKeyDown={handleSearch}
+                    className="block w-full pl-10 pr-3 py-2 border border-transparent rounded-full leading-5 bg-white bg-opacity-70 text-gray-700 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#d49a9e] sm:text-sm transition-colors"
+                    placeholder="搜尋課文名稱"
+                  />
+                </div>
+              </div>
+              <div className="hidden md:block">
+                <div className="ml-4 flex items-center space-x-6">
+                  <button onClick={() => handleNavigate('home')} className="hover:text-[#d49a9e] font-medium transition-colors h-16 flex items-center">Home</button>
+                  <div className="relative group cursor-pointer font-medium h-16 flex items-center">
+                    <span className="hover:text-[#d49a9e] transition-colors">國文 ▾</span>
+                    <div className="absolute left-1/2 -translate-x-1/2 top-12 pt-4 w-24 hidden group-hover:block z-50">
+                      <div className="bg-white shadow-lg rounded-md overflow-hidden border border-gray-100 text-center text-sm">
+                        <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('chinese-g7')}>國一 G7</div>
+                        <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('chinese-g8')}>國二 G8</div>
+                        <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('chinese-g9')}>國三 G9</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="relative group cursor-pointer font-medium h-16 flex items-center">
+                    <span className="hover:text-[#d49a9e] transition-colors">英語 ▾</span>
+                    <div className="absolute left-1/2 -translate-x-1/2 top-12 pt-4 w-24 hidden group-hover:block z-50">
+                      <div className="bg-white shadow-lg rounded-md overflow-hidden border border-gray-100 text-center text-sm">
+                        <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('english-g7')}>國一 G7</div>
+                        <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('english-g8')}>國二 G8</div>
+                        <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('english-g9')}>國三 G9</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="relative group cursor-pointer font-medium h-16 flex items-center">
-                <span className="hover:text-[#d49a9e] transition-colors">英語 ▾</span>
-                <div className="absolute left-1/2 -translate-x-1/2 top-12 pt-4 w-24 hidden group-hover:block z-50">
-                  <div className="bg-white shadow-lg rounded-md overflow-hidden border border-gray-100 text-center text-sm">
-                    <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('english-g7')}>國一 G7</div>
-                    <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('english-g8')}>國二 G8</div>
-                    <div className="py-2 hover:bg-pink-50 text-gray-700" onClick={() => handleNavigate('english-g9')}>國三 G9</div>
+            </div>
+          </div>
+        </nav>
+      );
+
+      const HomeView = () => (
+        <div className="flex-1 bg-[#f9f9fa] pb-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <div className="bg-[#e2e2e6] rounded-[2rem] p-12 text-center shadow-sm relative overflow-hidden flex flex-col items-center">
+              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-pink-200 via-transparent to-transparent"></div>
+              <h1 className="text-4xl font-bold mb-4 tracking-wide relative z-10 flex justify-center items-center">
+                <span className="text-[#d49a9e]">抽背練習</span>
+                <span className="text-gray-700">統整平臺</span>
+              </h1>
+              <p className="text-gray-500 font-medium tracking-widest relative z-10 mb-4">週四晨間抽背，你，準備好了嗎？</p>
+              
+              <div className="bg-white/80 backdrop-blur-sm px-5 py-2 rounded-full shadow-sm border border-pink-100 flex items-center text-sm text-gray-600 relative z-10">
+                <span className="w-2 h-2 rounded-full bg-[#d49a9e] mr-2"></span>
+                抽背倒數：<span className="font-bold text-[#d49a9e] ml-1">{daysUntilThursday === 0 ? '就在今天！' : `${daysUntilThursday} 天`}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                { id: 'g7', title: '國一', subtitle: 'Grade 7' },
+                { id: 'g8', title: '國二', subtitle: 'Grade 8' },
+                { id: 'g9', title: '國三', subtitle: 'Grade 9' }
+              ].map((grade) => (
+                <div key={grade.id} className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100">
+                  <div className="bg-[#d49a9e] py-3 text-center">
+                    <h2 className="text-xl font-bold text-white tracking-widest">{grade.title}</h2>
+                    <p className="text-pink-100 text-xs">{grade.subtitle}</p>
+                  </div>
+                  <div className="px-4 pt-5 pb-4 flex justify-center space-x-6">
+                    <button 
+                      onClick={() => handleNavigate(`chinese-${grade.id}`)}
+                      className="flex flex-col items-center group w-20"
+                    >
+                      <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-[#f2e8e9] group-hover:text-[#d49a9e] transition-colors shadow-sm text-gray-400">
+                        <IconBookOpen size={22} />
+                      </div>
+                      <span className="mt-2 text-gray-600 font-medium text-sm group-hover:text-[#d49a9e] transition-colors">國文</span>
+                    </button>
+                    <button 
+                      onClick={() => handleNavigate(`english-${grade.id}`)}
+                      className="flex flex-col items-center group w-20"
+                    >
+                      <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-[#f2e8e9] group-hover:text-[#d49a9e] transition-colors shadow-sm text-gray-400">
+                        <IconGlobe size={22} />
+                      </div>
+                      <span className="mt-2 text-gray-600 font-medium text-sm group-hover:text-[#d49a9e] transition-colors">英語</span>
+                    </button>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
-      </div>
-    </nav>
-  );
+      );
 
-  // --- 首頁元件 ---
-  const HomeView = () => (
-    <div className="flex-1 bg-[#f9f9fa] pb-8">
-      {/* 英雄橫幅 */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <div className="bg-[#e2e2e6] rounded-[2rem] p-12 text-center shadow-sm relative overflow-hidden flex flex-col items-center">
-          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-pink-200 via-transparent to-transparent"></div>
-          <h1 className="text-4xl font-bold mb-4 tracking-wide relative z-10 flex justify-center items-center">
-            <span className="text-[#d49a9e]">抽背練習</span>
-            <span className="text-gray-700">統整平臺</span>
-          </h1>
-          <p className="text-gray-500 font-medium tracking-widest relative z-10 mb-4">週四晨間抽背，你，準備好了嗎？</p>
-          
-          {/* 倒數計時器移至此處 */}
-          <div className="bg-white/80 backdrop-blur-sm px-5 py-2 rounded-full shadow-sm border border-pink-100 flex items-center text-sm text-gray-600 relative z-10">
-            <span className="w-2 h-2 rounded-full bg-[#d49a9e] mr-2"></span>
-            抽背倒數：<span className="font-bold text-[#d49a9e] ml-1">{daysUntilThursday === 0 ? '就在今天！' : `${daysUntilThursday} 天`}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 年級卡片區 */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            { id: 'g7', title: '國一', subtitle: 'Grade 7' },
-            { id: 'g8', title: '國二', subtitle: 'Grade 8' },
-            { id: 'g9', title: '國三', subtitle: 'Grade 9' }
-          ].map((grade) => (
-            <div key={grade.id} className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100">
-              <div className="bg-[#d49a9e] py-3 text-center">
-                <h2 className="text-xl font-bold text-white tracking-widest">{grade.title}</h2>
-                <p className="text-pink-100 text-xs">{grade.subtitle}</p>
-              </div>
-              <div className="px-4 pt-5 pb-4 flex justify-center space-x-6">
-                <button 
-                  onClick={() => handleNavigate(`chinese-${grade.id}`)}
-                  className="flex flex-col items-center group w-20"
-                >
-                  <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-[#f2e8e9] group-hover:text-[#d49a9e] transition-colors shadow-sm text-gray-400">
-                    <BookOpen size={22} />
-                  </div>
-                  <span className="mt-2 text-gray-600 font-medium text-sm group-hover:text-[#d49a9e] transition-colors">國文</span>
-                </button>
-                <button 
-                  onClick={() => handleNavigate(`english-${grade.id}`)}
-                  className="flex flex-col items-center group w-20"
-                >
-                  <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-[#f2e8e9] group-hover:text-[#d49a9e] transition-colors shadow-sm text-gray-400">
-                    <Globe size={22} />
-                  </div>
-                  <span className="mt-2 text-gray-600 font-medium text-sm group-hover:text-[#d49a9e] transition-colors">英語</span>
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  // --- 學科頁面元件 ---
-  const SubjectView = () => {
-    const [subject, grade] = currentPage.split('-'); // e.g., ['chinese', 'g8']
-    const isEnglish = subject === 'english';
-    
-    let contentList = [];
-    if (isEnglish) {
-      contentList = data.english[grade][semester === 1 ? 'sem1' : 'sem2'];
-    } else {
-      contentList = data.chinese[grade];
-    }
-
-    const gradeNumber = grade.replace('g', '');
-    const titleText = isEnglish 
-      ? `${gradeNumber}${semester === 1 ? '上' : '下'}英語` 
-      : `${gradeNumber}年級國文`;
-
-    return (
-      <div className="flex-1 bg-[#f9f9fa] pb-12">
-        {/* 麵包屑導覽 */}
-        <div className="bg-white border-b border-gray-100 px-6 py-3 flex items-center text-sm text-gray-500 shadow-sm">
-          <button onClick={() => handleNavigate('home')} className="hover:text-[#d49a9e] flex items-center">
-            <Home size={16} className="mr-1" /> Home
-          </button>
-          <ChevronRight size={16} className="mx-2 text-gray-300" />
-          <span className="text-[#d49a9e] font-medium">{titleText}</span>
-        </div>
-
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          
-          {/* 標題與切換按鈕區 */}
-          <div className="flex flex-col md:flex-row justify-between items-center mb-10 relative">
-            <div className="w-full flex justify-end md:absolute md:right-0 top-0">
-              {isEnglish && (
-                <button 
-                  onClick={toggleSemester}
-                  className="flex items-center px-4 py-2 border-2 border-[#d49a9e] text-[#d49a9e] rounded-full hover:bg-[#f2e8e9] transition-colors font-medium bg-white"
-                >
-                  切換至 {semester === 1 ? '下' : '上'}學期 <RefreshCw size={16} className="ml-2" />
-                </button>
-              )}
-            </div>
-            
-            <div className="w-full flex justify-center items-center mt-6 md:mt-0">
-              <Feather className="text-[#c2b2b4] mr-4" size={48} />
-              <h1 className="text-5xl font-bold text-[#6d6875] tracking-widest">{titleText}</h1>
-            </div>
-          </div>
-
-          {/* 公告/空狀態列 */}
-          {contentList.length === 0 && (
-            <div className="border border-dashed border-[#d49a9e] bg-[#fdf8f8] rounded-xl p-4 flex items-center justify-center text-[#d49a9e] mb-10 shadow-sm">
-              <AlertCircle size={20} className="mr-2" />
-              <span className="font-medium">
-                公告：{isEnglish && semester === 1 ? '上學期' : ''}本科目目前尚未上傳，僅保留現有資源供參考
-              </span>
-            </div>
-          )}
-
-          {/* 課程按鈕網格 */}
-          <div className="flex flex-wrap justify-center gap-6 mt-8">
-            {contentList.map((item, index) => (
-              <a 
-                key={index}
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white text-gray-600 font-bold text-lg rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 border border-gray-100 flex items-center justify-center w-36 h-24 hover:text-[#d49a9e] hover:border-[#f2e8e9]"
-              >
-                {item.title}
-              </a>
-            ))}
-          </div>
-
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    <div className="min-h-screen flex flex-col font-sans selection:bg-pink-100 selection:text-pink-900">
-      <style dangerouslySetInnerHTML={{__html: `
-        @import url('https://cdn.jsdelivr.net/npm/gensen-rounded-web@1.0.1/css/gensen-rounded-tw.css');
-        @import url('https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@400;500;700&display=swap');
-        * {
-          font-family: 'Chiron GoRound TC', 'GenSenRounded TW', sans-serif !important;
-        }
-      `}} />
-      <Navbar />
-      
-      {currentPage === 'home' ? <HomeView /> : <SubjectView />}
-
-      {/* 頁尾 */}
-      <footer className="bg-[#f2e8e9] border-t border-[#e8d5d7] pt-6 pb-4 flex flex-col justify-between px-6 items-center">
-        {/* Footer / Citation Section (防切斷，綁在最後) */}
-        <div className="space-y-1 text-gray-500 text-center mb-4 avoid-break-wrapper print:mt-6 print:mb-0">
-          <p className="font-medium text-[12px]">原版工具：米克師；延伸開發：金魚老師</p>
-          <p className="font-medium text-[12px]">
-            原版網頁連結：<a href="https://spedmixteaching.pages.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-[#d49a9e] underline decoration-dotted transition-colors">https://reurl.cc/KO98Q9</a>
-          </p>
-          <p className="text-[10px] pt-2">本作品基於原版網頁改編，採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh_TW" target="_blank" rel="noopener noreferrer" className="underline decoration-dotted hover:text-[#d49a9e] transition-colors">CC BY-NC-SA 4.0</a> 授權。</p>
-        </div>
+      const SubjectView = () => {
+        const [subject, grade] = currentPage.split('-');
+        const isEnglish = subject === 'english';
         
-        <p className="text-xs text-gray-400">© 2026 PRACTICE HUB</p>
-      </footer>
-    </div>
-  );
-}
+        let contentList = [];
+        if (isEnglish) {
+          contentList = data.english[grade][semester === 1 ? 'sem1' : 'sem2'];
+        } else {
+          contentList = data.chinese[grade];
+        }
+
+        const gradeNumber = grade.replace('g', '');
+        const titleText = isEnglish 
+          ? `${gradeNumber}${semester === 1 ? '上' : '下'}英語` 
+          : `${gradeNumber}年級國文`;
+
+        return (
+          <div className="flex-1 bg-[#f9f9fa] pb-12">
+            <div className="bg-white border-b border-gray-100 px-6 py-3 flex items-center text-sm text-gray-500 shadow-sm">
+              <button onClick={() => handleNavigate('home')} className="hover:text-[#d49a9e] flex items-center">
+                <IconHome size={16} className="mr-1" /> Home
+              </button>
+              <IconChevronRight size={16} className="mx-2 text-gray-300" />
+              <span className="text-[#d49a9e] font-medium">{titleText}</span>
+            </div>
+
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+              <div className="flex flex-col md:flex-row justify-between items-center mb-10 relative">
+                <div className="w-full flex justify-end md:absolute md:right-0 top-0">
+                  {isEnglish && (
+                    <button 
+                      onClick={toggleSemester}
+                      className="flex items-center px-4 py-2 border-2 border-[#d49a9e] text-[#d49a9e] rounded-full hover:bg-[#f2e8e9] transition-colors font-medium bg-white"
+                    >
+                      切換至 {semester === 1 ? '下' : '上'}學期 <IconRefreshCw size={16} className="ml-2" />
+                    </button>
+                  )}
+                </div>
+                
+                <div className="w-full flex justify-center items-center mt-6 md:mt-0">
+                  <IconFeather className="text-[#c2b2b4] mr-4" size={48} />
+                  <h1 className="text-5xl font-bold text-[#6d6875] tracking-widest">{titleText}</h1>
+                </div>
+              </div>
+
+              {contentList.length === 0 && (
+                <div className="border border-dashed border-[#d49a9e] bg-[#fdf8f8] rounded-xl p-4 flex items-center justify-center text-[#d49a9e] mb-10 shadow-sm">
+                  <IconAlertCircle size={20} className="mr-2" />
+                  <span className="font-medium">
+                    公告：{isEnglish && semester === 1 ? '上學期' : ''}本科目目前尚未上傳，僅保留現有資源供參考
+                  </span>
+                </div>
+              )}
+
+              <div className="flex flex-wrap justify-center gap-6 mt-8">
+                {contentList.map((item, index) => (
+                  <a 
+                    key={index}
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-white text-gray-600 font-bold text-lg rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 border border-gray-100 flex items-center justify-center w-36 h-24 hover:text-[#d49a9e] hover:border-[#f2e8e9]"
+                  >
+                    {item.title}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      return (
+        <div className="min-h-screen flex flex-col font-sans selection:bg-pink-100 selection:text-pink-900">
+          <Navbar />
+          {currentPage === 'home' ? <HomeView /> : <SubjectView />}
+          
+          <footer className="bg-[#f2e8e9] border-t border-[#e8d5d7] pt-6 pb-4 flex flex-col justify-between px-6 items-center">
+            <div className="space-y-1 text-gray-500 text-center mb-4 avoid-break-wrapper print:mt-6 print:mb-0">
+              <p className="font-medium text-[12px]">原版工具：米克師；延伸開發：金魚老師</p>
+              <p className="font-medium text-[12px]">
+                原版網頁連結：<a href="https://spedmixteaching.pages.dev/" target="_blank" rel="noopener noreferrer" className="hover:text-[#d49a9e] underline decoration-dotted transition-colors">https://reurl.cc/KO98Q9</a>
+              </p>
+              <p className="text-[10px] pt-2">本作品基於原版網頁改編，採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh_TW" target="_blank" rel="noopener noreferrer" className="underline decoration-dotted hover:text-[#d49a9e] transition-colors">CC BY-NC-SA 4.0</a> 授權。</p>
+            </div>
+            <p className="text-xs text-gray-400">© 2026 PRACTICE HUB</p>
+          </footer>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
